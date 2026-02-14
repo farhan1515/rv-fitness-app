@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "445423561826",
+    "project_id": "rv-fitness",
+    "storage_bucket": "rv-fitness.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445423561826:android:01aa0b6ccdb0aed143f53b",
+        "android_client_info": {
+          "package_name": "com.example.rv_fitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASHjFCQDU_YHJ610HbdulDdGnQan8MpuY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445423561826:android:7f2ad651fffdd41e43f53b",
+        "android_client_info": {
+          "package_name": "com.gym.rv_fitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASHjFCQDU_YHJ610HbdulDdGnQan8MpuY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445423561826:android:52e2a9ab15a7a0a243f53b",
+        "android_client_info": {
+          "package_name": "com.gym.rvfitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASHjFCQDU_YHJ610HbdulDdGnQan8MpuY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

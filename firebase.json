@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "rv-fitness",
+          "appId": "1:445423561826:android:01aa0b6ccdb0aed143f53b",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "rv-fitness",
+          "configurations": {
+            "android": "1:445423561826:android:01aa0b6ccdb0aed143f53b",
+            "ios": "1:445423561826:ios:c28a07740c1cb06643f53b",
+            "macos": "1:445423561826:ios:c28a07740c1cb06643f53b",
+            "web": "1:445423561826:web:755d254a9c0499c943f53b",
+            "windows": "1:445423561826:web:ec2700f061fe71fe43f53b"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
