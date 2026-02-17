@@ -54,8 +54,10 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   shared_preferences: ^2.2.2
   local_auth: ^2.1.5
-  biometric_storage: ^5.0.1
+  
   flutter_launcher_icons: ^0.14.3
+  table_calendar: ^3.1.3
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:

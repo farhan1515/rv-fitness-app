@@ -44,12 +44,13 @@ class DashboardScreen extends ConsumerWidget {
                 child: customersAsync.when(
                   data: (customers) => _buildDashboard(context, customers),
                   loading: () => ShimmerLoading(),
-                  error: (error, stack) => Center(
-                    child: Text(
-                      'Error: $error',
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
-                  ),
+                  error:
+                      (error, stack) => Center(
+                        child: Text(
+                          'Error: $error',
+                          style: GoogleFonts.poppins(color: Colors.white),
+                        ),
+                      ),
                 ),
               ),
             ],
@@ -61,78 +62,79 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFFB81C), // Gold
-            Color(0xFFF29100), // Gold gradient
-          ],
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 18,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.fitness_center,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                'RV Fitness',
-                style: GoogleFonts.montserrat(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFFB81C), // Gold
+                Color(0xFFF29100), // Gold gradient
+              ],
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 18,
+                offset: Offset(0, 6),
               ),
             ],
           ),
-          Row(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // IconButton(
-              //   icon: Icon(Icons.notifications_outlined, color: Colors.white),
-              //   onPressed: () {},
-              // ),
-              IconButton(
-                icon: Icon(Icons.person_outline, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => OwnerProfileScreen()),
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.fitness_center,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    'RV Fitness',
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  // IconButton(
+                  //   icon: Icon(Icons.notifications_outlined, color: Colors.white),
+                  //   onPressed: () {},
+                  // ),
+                  IconButton(
+                    icon: Icon(Icons.person_outline, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OwnerProfileScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-    )
+        )
         .animate()
         .fadeIn(duration: Duration(milliseconds: 500))
         .slideY(begin: -0.2, end: 0);
@@ -166,9 +168,10 @@ class DashboardScreen extends ConsumerWidget {
               Text(
                 "Welcome to RV Fitness💪",
                 style: GoogleFonts.rajdhani(
-                    color: Color(0xFFF5F5F5),
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold),
+                  color: Color(0xFFF5F5F5),
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 4),
               Text(
@@ -180,17 +183,26 @@ class DashboardScreen extends ConsumerWidget {
                   letterSpacing: 1.2,
                 ),
               ),
-              SizedBox(
-                height: 20,
+              SizedBox(height: 20),
+              _buildStatCardsGrid(
+                customers.length,
+                activeCustomers,
+                expiredCustomers,
+                context,
+                customers,
               ),
-              _buildStatCardsGrid(customers.length, activeCustomers,
-                  expiredCustomers, context, customers),
               SizedBox(height: 20),
               _buildTrainingStatsCard(
-                  selfTraining, personalTraining, customers),
+                selfTraining,
+                personalTraining,
+                customers,
+              ),
               SizedBox(height: 24),
               _buildSectionTitle(
-                  context, 'Recent Members', Icons.people_alt_outlined),
+                context,
+                'Recent Members',
+                Icons.people_alt_outlined,
+              ),
               SizedBox(height: 12),
               _buildRecentMembers(context, customers),
               SizedBox(height: 20),
@@ -205,54 +217,70 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildSearchBar(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: TextField(
-        style: GoogleFonts.poppins(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: 'Search clients...',
-          hintStyle: GoogleFonts.poppins(color: Colors.white.withOpacity(0.6)),
-          prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.6)),
-          filled: true,
-          fillColor: Colors.transparent,
-          border: OutlineInputBorder(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 16),
-        ),
-      ),
-    )
+          child: TextField(
+            style: GoogleFonts.poppins(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: 'Search clients...',
+              hintStyle: GoogleFonts.poppins(
+                color: Colors.white.withOpacity(0.6),
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.white.withOpacity(0.6),
+              ),
+              filled: true,
+              fillColor: Colors.transparent,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+        )
         .animate()
         .fadeIn(duration: Duration(milliseconds: 600))
         .slideX(begin: -0.1, end: 0);
   }
 
-  Widget _buildStatCardsGrid(int total, int active, int expired,
-      BuildContext context, List<Customer> customers) {
+  Widget _buildStatCardsGrid(
+    int total,
+    int active,
+    int expired,
+    BuildContext context,
+    List<Customer> customers,
+  ) {
     // Calculate new members this week
     final today = DateTime.now();
     final weekAgo = today.subtract(Duration(days: 7));
-    final newMembersThisWeek = customers
-        .where(
-            (c) => c.startDate.isAfter(weekAgo) && c.startDate.isBefore(today))
-        .length;
+    final newMembersThisWeek =
+        customers
+            .where(
+              (c) =>
+                  c.startDate.isAfter(weekAgo) && c.startDate.isBefore(today),
+            )
+            .length;
 
     // Calculate renewal rate
-    final expiringThisMonth = customers
-        .where((c) =>
-            c.endDate.isAfter(today) &&
-            c.endDate.isBefore(today.add(Duration(days: 3))))
-        .length;
+    final expiringThisMonth =
+        customers
+            .where(
+              (c) =>
+                  c.endDate.isAfter(today) &&
+                  c.endDate.isBefore(today.add(Duration(days: 3))),
+            )
+            .length;
 
     // Calculate average attendance
     final totalAttendance =
@@ -269,67 +297,74 @@ class DashboardScreen extends ConsumerWidget {
       ),
       children: [
         _buildStatCard(
-          'Total Clients',
-          total.toString(),
-          Icons.groups_outlined,
-          [Color(0xFFFFB81C), Color(0xFFF29100)],
-          context,
-        )
+              'Total Clients',
+              total.toString(),
+              Icons.groups_outlined,
+              [Color(0xFFFFB81C), Color(0xFFF29100)],
+              context,
+            )
             .animate()
             .fadeIn(
-                duration: Duration(milliseconds: 700),
-                delay: Duration(milliseconds: 100))
+              duration: Duration(milliseconds: 700),
+              delay: Duration(milliseconds: 100),
+            )
             .scale(begin: Offset(0.8, 0.8), end: Offset(1.0, 1.0)),
         _buildStatCard(
-          'Active',
-          active.toString(),
-          Icons.verified_user_outlined,
-          [Color(0xFFFFB81C), Color(0xFFF29100)],
-          context,
-        )
+              'Active',
+              active.toString(),
+              Icons.verified_user_outlined,
+              [Color(0xFFFFB81C), Color(0xFFF29100)],
+              context,
+            )
             .animate()
             .fadeIn(
-                duration: Duration(milliseconds: 700),
-                delay: Duration(milliseconds: 200))
+              duration: Duration(milliseconds: 700),
+              delay: Duration(milliseconds: 200),
+            )
             .scale(begin: Offset(0.8, 0.8), end: Offset(1.0, 1.0)),
         _buildStatCard(
-          'New This Week',
-          newMembersThisWeek.toString(),
-          Icons.trending_up_outlined,
-          [Color(0xFFFFB81C), Color(0xFFF29100)],
-          context,
-        )
+              'New This Week',
+              newMembersThisWeek.toString(),
+              Icons.trending_up_outlined,
+              [Color(0xFFFFB81C), Color(0xFFF29100)],
+              context,
+            )
             .animate()
             .fadeIn(
-                duration: Duration(milliseconds: 700),
-                delay: Duration(milliseconds: 300))
+              duration: Duration(milliseconds: 700),
+              delay: Duration(milliseconds: 300),
+            )
             .scale(begin: Offset(0.8, 0.8), end: Offset(1.0, 1.0)),
         _buildStatCard(
-          'Expiring Soon',
-          expiringThisMonth.toString(),
-          Icons.event_available_outlined,
-          [Color(0xFFFFB81C), Color(0xFFF29100)],
-          context,
-        )
+              'Expiring Soon',
+              expiringThisMonth.toString(),
+              Icons.event_available_outlined,
+              [Color(0xFFFFB81C), Color(0xFFF29100)],
+              context,
+            )
             .animate()
             .fadeIn(
-                duration: Duration(milliseconds: 700),
-                delay: Duration(milliseconds: 400))
+              duration: Duration(milliseconds: 700),
+              delay: Duration(milliseconds: 400),
+            )
             .scale(begin: Offset(0.8, 0.8), end: Offset(1.0, 1.0)),
       ],
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon,
-      List<Color> gradientColors, BuildContext context) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    List<Color> gradientColors,
+    BuildContext context,
+  ) {
     return GestureDetector(
       onTap: () {
         if (title == 'Expiring Soon') {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => ExpiringMembersScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => ExpiringMembersScreen()),
           );
         }
       },
@@ -360,11 +395,7 @@ class DashboardScreen extends ConsumerWidget {
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: Icon(icon, color: Colors.white, size: 20),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -404,157 +435,173 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildTrainingStatsCard(
-      int selfTraining, int personalTraining, List<Customer> customers) {
+    int selfTraining,
+    int personalTraining,
+    List<Customer> customers,
+  ) {
     final generalTraining =
         customers.where((c) => c.trainingType == 'General').length;
     final total = selfTraining + personalTraining + generalTraining;
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            spreadRadius: 1,
-            offset: Offset(0, 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 1,
+                offset: Offset(0, 8),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFFFB81C).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.fitness_center,
-                    color: Color(0xFFFFB81C),
-                    size: 22,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Text(
-                  "Training Distribution",
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            if (total == 0)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    'No members yet',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.7),
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFFB81C).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.fitness_center,
+                        color: Color(0xFFFFB81C),
+                        size: 22,
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 12),
+                    Text(
+                      "Training Distribution",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-              )
-            else
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                          height: constraints.maxWidth * 0.5,
-                          child: PieChart(
-                            PieChartData(
-                              sectionsSpace: 2,
-                              centerSpaceRadius: 30,
-                              sections: [
-                                PieChartSectionData(
-                                  value: selfTraining.toDouble(),
-                                  color: Color(0xFF6C63FF),
-                                  title: total > 0
-                                      ? '${(selfTraining / total * 100).round()}%'
-                                      : '0%',
-                                  radius: constraints.maxWidth * 0.2,
-                                  titleStyle: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
+                SizedBox(height: 16),
+                if (total == 0)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        'No members yet',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              height: constraints.maxWidth * 0.5,
+                              child: PieChart(
+                                PieChartData(
+                                  sectionsSpace: 2,
+                                  centerSpaceRadius: 30,
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: selfTraining.toDouble(),
+                                      color: Color(0xFF6C63FF),
+                                      title:
+                                          total > 0
+                                              ? '${(selfTraining / total * 100).round()}%'
+                                              : '0%',
+                                      radius: constraints.maxWidth * 0.2,
+                                      titleStyle: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    PieChartSectionData(
+                                      value: personalTraining.toDouble(),
+                                      color: Color(0xFF06BEB6),
+                                      title:
+                                          total > 0
+                                              ? '${(personalTraining / total * 100).round()}%'
+                                              : '0%',
+                                      radius: constraints.maxWidth * 0.2,
+                                      titleStyle: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    PieChartSectionData(
+                                      value: generalTraining.toDouble(),
+                                      color: Color(0xFFFFB81C),
+                                      title:
+                                          total > 0
+                                              ? '${(generalTraining / total * 100).round()}%'
+                                              : '0%',
+                                      radius: constraints.maxWidth * 0.2,
+                                      titleStyle: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                  borderData: FlBorderData(show: false),
                                 ),
-                                PieChartSectionData(
-                                  value: personalTraining.toDouble(),
-                                  color: Color(0xFF06BEB6),
-                                  title: total > 0
-                                      ? '${(personalTraining / total * 100).round()}%'
-                                      : '0%',
-                                  radius: constraints.maxWidth * 0.2,
-                                  titleStyle: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                PieChartSectionData(
-                                  value: generalTraining.toDouble(),
-                                  color: Color(0xFFFFB81C),
-                                  title: total > 0
-                                      ? '${(generalTraining / total * 100).round()}%'
-                                      : '0%',
-                                  radius: constraints.maxWidth * 0.2,
-                                  titleStyle: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                              borderData: FlBorderData(show: false),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLegendItem('Self Training',
-                                selfTraining.toString(), Color(0xFF6C63FF)),
-                            SizedBox(height: 12),
-                            _buildLegendItem('Personal Training',
-                                personalTraining.toString(), Color(0xFF06BEB6)),
-                            SizedBox(height: 12),
-                            _buildLegendItem('General Training',
-                                generalTraining.toString(), Color(0xFFFFB81C)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-          ],
-        ),
-      ),
-    )
+                          SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildLegendItem(
+                                  'Self Training',
+                                  selfTraining.toString(),
+                                  Color(0xFF6C63FF),
+                                ),
+                                SizedBox(height: 12),
+                                _buildLegendItem(
+                                  'Personal Training',
+                                  personalTraining.toString(),
+                                  Color(0xFF06BEB6),
+                                ),
+                                SizedBox(height: 12),
+                                _buildLegendItem(
+                                  'General Training',
+                                  generalTraining.toString(),
+                                  Color(0xFFFFB81C),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
+        )
         .animate()
         .fadeIn(
-            duration: Duration(milliseconds: 800),
-            delay: Duration(milliseconds: 500))
+          duration: Duration(milliseconds: 800),
+          delay: Duration(milliseconds: 500),
+        )
         .slideY(begin: 0.2, end: 0);
   }
 
@@ -564,10 +611,7 @@ class DashboardScreen extends ConsumerWidget {
         Container(
           width: 14,
           height: 14,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         SizedBox(width: 8),
         Expanded(
@@ -601,11 +645,7 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: Color(0xFFFFB81C),
-          size: 24,
-        ),
+        Icon(icon, color: Color(0xFFFFB81C), size: 24),
         SizedBox(width: 12),
         Text(
           title,
@@ -617,14 +657,15 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ],
     ).animate().fadeIn(
-        duration: Duration(milliseconds: 800),
-        delay: Duration(milliseconds: 600));
+      duration: Duration(milliseconds: 800),
+      delay: Duration(milliseconds: 600),
+    );
   }
 
   Widget _buildRecentMembers(BuildContext context, List<Customer> customers) {
     // Sort customers by start date in descending order (most recent first)
-    final recent = customers.toList()
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+    final recent =
+        customers.toList()..sort((a, b) => b.startDate.compareTo(a.startDate));
 
     // Take only the 5 most recent members
     final recentMembers = recent.take(5).toList();
@@ -636,118 +677,128 @@ class DashboardScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final customer = recentMembers[index];
         return Hero(
-          tag: 'customer-${customer.id}',
-          child: Container(
-            margin: EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                leading: CircleAvatar(
-                  backgroundColor: _getRandomColor(customer.id),
-                  child: Text(
-                    customer.name.substring(0, 1).toUpperCase(),
-                    style: GoogleFonts.montserrat(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                title: Text(
-                  customer.name,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today_outlined,
-                      size: 14,
-                      color: Colors.white.withOpacity(0.6),
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '${DateFormat.yMMMd().format(customer.startDate)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.white.withOpacity(0.6),
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: customer.trainingType == 'Personal'
-                            ? Color(0xFF06BEB6).withOpacity(0.2)
-                            : Color(0xFF6C63FF).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        customer.trainingType,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          color: customer.trainingType == 'Personal'
-                              ? Color(0xFF06BEB6)
-                              : Color(0xFF6C63FF),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+              tag: 'customer-${customer.id}',
+              child: Container(
+                margin: EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
-                trailing: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Colors.white,
+                child: Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                    onPressed: () {
+                    leading: CircleAvatar(
+                      backgroundColor: _getRandomColor(customer.id),
+                      child: Text(
+                        customer.name.substring(0, 1).toUpperCase(),
+                        style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      customer.name,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 14,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          '${DateFormat.yMMMd().format(customer.startDate)}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.6),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                customer.trainingType == 'Personal'
+                                    ? Color(0xFF06BEB6).withOpacity(0.2)
+                                    : Color(0xFF6C63FF).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            customer.trainingType,
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color:
+                                  customer.trainingType == 'Personal'
+                                      ? Color(0xFF06BEB6)
+                                      : Color(0xFF6C63FF),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      CustomerDetailScreen(customer: customer),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              CustomerDetailScreen(customer: customer),
+                          builder:
+                              (context) =>
+                                  CustomerDetailScreen(customer: customer),
                         ),
                       );
                     },
                   ),
                 ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CustomerDetailScreen(customer: customer),
-                    ),
-                  );
-                },
               ),
-            ),
-          ),
-        )
+            )
             .animate()
             .fadeIn(
-                duration: Duration(milliseconds: 800),
-                delay: Duration(milliseconds: (700 + index * 100)))
+              duration: Duration(milliseconds: 800),
+              delay: Duration(milliseconds: (700 + index * 100)),
+            )
             .slideX(begin: 0.1, end: 0);
       },
     );
@@ -778,23 +829,18 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Text(
                 'View All Members',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
               ),
               SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward,
-                size: 16,
-                color: Colors.white,
-              ),
+              Icon(Icons.arrow_forward, size: 16, color: Colors.white),
             ],
           ),
         ),
       ),
     ).animate().fadeIn(
-        duration: Duration(milliseconds: 800),
-        delay: Duration(milliseconds: 1200));
+      duration: Duration(milliseconds: 800),
+      delay: Duration(milliseconds: 1200),
+    );
   }
 
   Color _getRandomColor(String id) {

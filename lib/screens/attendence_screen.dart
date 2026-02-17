@@ -10,6 +10,8 @@ import '../providers/customer_provider.dart';
 import '../widgets/shimmer_loading.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'owner_profile_screen.dart';
+import 'attendence_history_screen.dart';
+import 'login_screen.dart';
 
 class AttendanceScreen extends ConsumerStatefulWidget {
   @override
@@ -24,36 +26,53 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Widget build(BuildContext context) {
     final customersAsync = ref.watch(customersProvider);
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1E1E1E), // Brand dark
-              Color(0xFF2D2D2D), // Brand dark gradient
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildCustomAppBar(),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _buildSearchBar(),
-                      SizedBox(height: 16),
-                      Expanded(child: _buildCustomerList(customersAsync)),
-                      if (_selectedCustomer != null) _buildMarkPresentButton(),
-                    ],
-                  ),
-                ),
+    return PopScope(
+      canPop: _selectedCustomer == null,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _selectedCustomer != null) {
+          setState(() => _selectedCustomer = null);
+        }
+      },
+      child: Scaffold(
+        body: GestureDetector(
+          onTap: () {
+            if (_selectedCustomer != null) {
+              setState(() => _selectedCustomer = null);
+            }
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF1E1E1E), // Brand dark
+                  Color(0xFF2D2D2D), // Brand dark gradient
+                ],
               ),
-            ],
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  _buildCustomAppBar(),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          _buildSearchBar(),
+                          SizedBox(height: 16),
+                          Expanded(child: _buildCustomerList(customersAsync)),
+                          if (_selectedCustomer != null)
+                            _buildMarkPresentButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -160,38 +179,44 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Widget _buildCustomerList(AsyncValue<List<Customer>> customersAsync) {
     return customersAsync.when(
       data: (customers) {
-        final filteredCustomers = customers
-            .where((customer) => customer.name
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()))
-            .toList();
+        final filteredCustomers =
+            customers
+                .where(
+                  (customer) => customer.name.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ),
+                )
+                .toList();
         return LayoutBuilder(
           builder: (context, constraints) {
             final isTablet = constraints.maxWidth > 600;
             return isTablet
                 ? GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.5,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: filteredCustomers.length,
-                    itemBuilder: (context, index) =>
-                        _buildCustomerCard(filteredCustomers[index]),
-                  )
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.5,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: filteredCustomers.length,
+                  itemBuilder:
+                      (context, index) =>
+                          _buildCustomerCard(filteredCustomers[index]),
+                )
                 : ListView.builder(
-                    itemCount: filteredCustomers.length,
-                    itemBuilder: (context, index) =>
-                        _buildCustomerCard(filteredCustomers[index]),
-                  );
+                  itemCount: filteredCustomers.length,
+                  itemBuilder:
+                      (context, index) =>
+                          _buildCustomerCard(filteredCustomers[index]),
+                );
           },
         );
       },
       loading: () => ShimmerLoading(),
-      error: (error, stack) => Center(
-        child: Text('Error: $error', style: TextStyle(color: Colors.white)),
-      ),
+      error:
+          (error, stack) => Center(
+            child: Text('Error: $error', style: TextStyle(color: Colors.white)),
+          ),
     );
   }
 
@@ -207,15 +232,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: isSelected
-                  ? [
-                      Color(0xFFFFB81C).withOpacity(0.3),
-                      Color(0xFFF29100).withOpacity(0.3),
-                    ]
-                  : [
-                      Color(0xFFFFB81C).withOpacity(0.10),
-                      Color(0xFFF29100).withOpacity(0.08),
-                    ],
+              colors:
+                  isSelected
+                      ? [
+                        Color(0xFFFFB81C).withOpacity(0.3),
+                        Color(0xFFF29100).withOpacity(0.3),
+                      ]
+                      : [
+                        Color(0xFFFFB81C).withOpacity(0.10),
+                        Color(0xFFF29100).withOpacity(0.08),
+                      ],
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
@@ -225,9 +251,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 offset: Offset(0, 4),
               ),
             ],
-            border: isSelected
-                ? Border.all(color: Color(0xFFFFB81C), width: 2)
-                : null,
+            border:
+                isSelected
+                    ? Border.all(color: Color(0xFFFFB81C), width: 2)
+                    : null,
           ),
           child: ListTile(
             leading: CircleAvatar(
@@ -265,112 +292,193 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
   Widget _buildMarkPresentButton() {
     return Material(
-      color: Colors.transparent,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 16),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFFFB81C), // Brand Gold
-              Color(0xFFF29100), // Brand Gold Gradient
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFFFFB81C).withOpacity(0.3),
-              blurRadius: 15,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.fitness_center, color: Colors.white, size: 28),
-                SizedBox(width: 12),
-                Text(
-                  'Hey ${_selectedCustomer!.name.split(' ')[0]}!',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+          color: Colors.transparent,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 16),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFFFB81C), // Brand Gold
+                  Color(0xFFF29100), // Brand Gold Gradient
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0xFFFFB81C).withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: Offset(0, 8),
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            Text(
-              'Light Weight Baby! 💪',
-              style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 16),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => _markAttendance(context, _selectedCustomer!),
-                borderRadius: BorderRadius.circular(15),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+            child: Column(
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.check_circle,
-                          size: 24,
-                          color: Color(0xFFFFB81C),
+                          Icons.fitness_center,
+                          color: Colors.white,
+                          size: 28,
                         ),
-                        SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            'Mark Present - ${DateFormat.yMMMd().format(DateTime.now())}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFFFB81C),
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                        SizedBox(width: 12),
+                        Text(
+                          'Hey ${_selectedCustomer!.name.split(' ')[0]}!',
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedCustomer = null);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Light Weight Baby! 💪',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => AttendanceHistoryScreen(
+                                  customer: _selectedCustomer!,
+                                ),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(30),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.history, color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              "View History",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _markAttendance(context, _selectedCustomer!),
+                    borderRadius: BorderRadius.circular(15),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 24,
+                              color: Color(0xFFFFB81C),
+                            ),
+                            SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                'Mark Present - ${DateFormat.yMMMd().format(DateTime.now())}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFFFB81C),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Click here to mark your attendance',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 8),
-            Text(
-              'Click here to mark your attendance',
-              style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
-    )
+          ),
+        )
         .animate()
         .fadeIn(duration: Duration(milliseconds: 500))
         .slideY(begin: 0.2, end: 0);
@@ -386,55 +494,61 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     if (daysUntilExpiration < 0) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: Color(0xFF2C3E50),
-          title: Text(
-            'Membership Expired',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 60),
-              SizedBox(height: 16),
-              Text(
-                'Dear ${customer.name},',
-                style: GoogleFonts.poppins(
+        builder:
+            (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              backgroundColor: Color(0xFF2C3E50),
+              title: Text(
+                'Membership Expired',
+                style: GoogleFonts.montserrat(
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
-                'Your gym membership has expired on ${DateFormat.yMMMd().format(endDate)}. To continue enjoying our facilities and mark your attendance, please renew your membership.',
-                style: GoogleFonts.poppins(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.orange,
+                    size: 60,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Dear ${customer.name},',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Your gym membership has expired on ${DateFormat.yMMMd().format(endDate)}. To continue enjoying our facilities and mark your attendance, please renew your membership.',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'OK',
-                style: GoogleFonts.poppins(
-                  color: Color(0xFF6B46C1),
-                  fontWeight: FontWeight.w600,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(
+                      color: Color(0xFF6B46C1),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
       );
       return;
     }
@@ -445,38 +559,40 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     if (hasCheckedIn) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: Color(0xFF2C3E50),
-          title: Text(
-            'Already Checked In',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            'You have already marked attendance for today.',
-            style: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 16,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'OK',
-                style: GoogleFonts.poppins(
-                  color: Color(0xFF6B46C1),
-                  fontWeight: FontWeight.w600,
+        builder:
+            (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              backgroundColor: Color(0xFF2C3E50),
+              title: Text(
+                'Already Checked In',
+                style: GoogleFonts.montserrat(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              content: Text(
+                'You have already marked attendance for today.',
+                style: GoogleFonts.poppins(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 16,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(
+                      color: Color(0xFF6B46C1),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
       );
       return;
     }
@@ -490,49 +606,52 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Color(0xFF2C3E50),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 60),
-            SizedBox(height: 16),
-            Text(
-              'Attendance Marked Successfully!',
-              style: GoogleFonts.montserrat(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
             ),
-            SizedBox(height: 8),
-            Text(
-              'Date: ${DateFormat.yMMMd().format(DateTime.now())}',
-              style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 14,
-              ),
+            backgroundColor: Color(0xFF2C3E50),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle, color: Colors.green, size: 60),
+                SizedBox(height: 16),
+                Text(
+                  'Attendance Marked Successfully!',
+                  style: GoogleFonts.montserrat(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Date: ${DateFormat.yMMMd().format(DateTime.now())}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() => _selectedCustomer = null); // Clear selection
-            },
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(
-                color: Color(0xFF6B46C1),
-                fontWeight: FontWeight.w600,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedCustomer = null); // Clear selection
+                },
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(
+                    color: Color(0xFF6B46C1),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

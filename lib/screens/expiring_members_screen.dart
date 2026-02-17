@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../models/customer.dart';
-import '../providers/customer_provider.dart';
-import '../services/firebase_service.dart';
+import 'package:rv_fitness/models/customer.dart';
+import 'package:rv_fitness/providers/customer_provider.dart';
 import 'customer_detail_screen.dart';
+
+import 'package:flutter_animate/flutter_animate.dart';
 
 class ExpiringMembersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final customersAsync = ref.watch(customersProvider);
-    final today = DateTime.now();
-    final threeDaysFromNow = today.add(Duration(days: 3));
 
     return Scaffold(
       body: Container(
@@ -20,7 +19,10 @@ class ExpiringMembersScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF1E1E1E), Color(0xFF2D2D2D)],
+            colors: [
+              Color(0xFF1E1E1E), // Brand dark
+              Color(0xFF2D2D2D), // Brand dark gradient
+            ],
           ),
         ),
         child: SafeArea(
@@ -28,145 +30,9 @@ class ExpiringMembersScreen extends ConsumerWidget {
             children: [
               _buildCustomAppBar(context),
               Expanded(
-                child: customersAsync.when(
-                  data: (customers) {
-                    final expiringMembers = customers
-                        .where((c) =>
-                            c.endDate.isAfter(today) &&
-                            c.endDate.isBefore(threeDaysFromNow))
-                        .toList();
-
-                    if (expiringMembers.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No memberships expiring soon',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 16,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: EdgeInsets.all(16),
-                      itemCount: expiringMembers.length,
-                      itemBuilder: (context, index) {
-                        final member = expiringMembers[index];
-                        final daysUntilExpiry =
-                            member.endDate.difference(today).inDays;
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CustomerDetailScreen(customer: member),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(bottom: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              leading: CircleAvatar(
-                                backgroundColor: _getRandomColor(member.id),
-                                child: Text(
-                                  member.name.substring(0, 1).toUpperCase(),
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                member.name,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today_outlined,
-                                        size: 14,
-                                        color: Colors.white.withOpacity(0.6),
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Expires: ${DateFormat.yMMMd().format(member.endDate)}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 12,
-                                          color: Colors.white.withOpacity(0.6),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 4),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: daysUntilExpiry == 0
-                                          ? Color(0xFFFFB81C).withOpacity(0.2)
-                                          : Color(0xFFF29100).withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      daysUntilExpiry == 0
-                                          ? 'Expires Today!'
-                                          : 'Expires in $daysUntilExpiry days',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 10,
-                                        color: daysUntilExpiry == 0
-                                            ? Color(0xFFFFB81C)
-                                            : Color(0xFFF29100),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white.withOpacity(0.8),
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  loading: () => Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
-                  error: (error, stack) => Center(
-                    child: Text(
-                      'Error: $error',
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
-                  ),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: _buildExpiringList(customersAsync),
                 ),
               ),
             ],
@@ -183,7 +49,10 @@ class ExpiringMembersScreen extends ConsumerWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFFFB81C), Color(0xFFF29100)],
+          colors: [
+            Color(0xFFD32F2F), // Red for urgency
+            Color(0xFFC62828),
+          ],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
@@ -200,34 +69,188 @@ class ExpiringMembersScreen extends ConsumerWidget {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           Expanded(
-            child: Text(
-              'Expiring Memberships',
-              style: GoogleFonts.montserrat(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            child: Center(
+              child: Text(
+                'Expiring Memberships',
+                style: GoogleFonts.anton(
+                  color: Colors.white,
+                  fontSize: 24,
+                  letterSpacing: 1.2,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.3),
+                      offset: Offset(2, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(width: 40), // For balance
+          SizedBox(width: 40), // Balance
         ],
       ),
     );
   }
 
-  Color _getRandomColor(String id) {
-    final colors = [
-      Color(0xFFFFB81C),
-      Color(0xFFF29100),
-      Color(0xFF000000),
-     Color(0xFF1976D2),
-    ];
+  Widget _buildExpiringList(AsyncValue<List<Customer>> customersAsync) {
+    return customersAsync.when(
+      data: (customers) {
+        final today = DateTime.now();
+        final expiringCustomers =
+            customers.where((customer) {
+              final isFuture = customer.endDate.isAfter(today);
+              final daysLeft = customer.endDate.difference(today).inDays;
+              return isFuture && daysLeft <= 7;
+            }).toList();
 
-    return colors[id.hashCode % colors.length];
+        // Sort by closest expiry first
+        expiringCustomers.sort((a, b) => a.endDate.compareTo(b.endDate));
+
+        if (expiringCustomers.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.white.withOpacity(0.3),
+                  size: 64,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No memberships expiring soon!',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: expiringCustomers.length,
+          itemBuilder: (context, index) {
+            final customer = expiringCustomers[index];
+            final daysLeft = customer.endDate.difference(today).inDays;
+
+            return _buildCustomerCard(context, customer, daysLeft, index);
+          },
+        );
+      },
+      loading:
+          () => Center(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: CircularProgressIndicator(color: Color(0xFFD32F2F)),
+            ),
+          ),
+      error: (e, s) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  Widget _buildCustomerCard(
+    BuildContext context,
+    Customer customer,
+    int daysLeft,
+    int index,
+  ) {
+    bool isExpired = daysLeft < 0;
+    Color statusColor = isExpired ? Colors.red : Colors.orange;
+
+    return Container(
+          margin: EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: statusColor.withOpacity(0.3)),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => CustomerDetailScreen(customer: customer),
+                  ),
+                );
+              },
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              leading: CircleAvatar(
+                backgroundColor: Color(0xFF6B46C1),
+                child: Text(
+                  customer.name[0],
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(
+                customer.name,
+                style: GoogleFonts.montserrat(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 4),
+                  Text(
+                    'Expires: ${DateFormat.yMMMd().format(customer.endDate)}',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      isExpired
+                          ? 'Expired ${daysLeft.abs()} days ago'
+                          : 'Expires in $daysLeft days',
+                      style: GoogleFonts.poppins(
+                        color: statusColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white.withOpacity(0.5),
+                size: 16,
+              ),
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(duration: Duration(milliseconds: 300))
+        .slideX(begin: 0.2, end: 0, delay: Duration(milliseconds: index * 50));
   }
 }

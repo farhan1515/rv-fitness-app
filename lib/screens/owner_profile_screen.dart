@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
 import 'plans_screen.dart';
 import 'change_password_screen.dart';
+import 'attendance_dashboard_screen.dart';
+import 'expiring_members_screen.dart';
 import '../providers/session_provider.dart';
 
 class OwnerProfileScreen extends ConsumerWidget {
@@ -18,10 +20,7 @@ class OwnerProfileScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1E1E1E),
-              Color(0xFF2D2D2D),
-            ],
+            colors: [Color(0xFF1E1E1E), Color(0xFF2D2D2D)],
           ),
         ),
         child: SafeArea(
@@ -34,6 +33,10 @@ class OwnerProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _buildAttendanceDashboardCard(context),
+                      const SizedBox(height: 16),
+                      _buildExpiringMembersCard(context),
+                      const SizedBox(height: 16),
                       _buildProfileHeader(),
                       const SizedBox(height: 24),
                       _buildProfileSection('Personal Information', [
@@ -44,10 +47,14 @@ class OwnerProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       _buildProfileSection('Gym Information', [
                         _buildInfoRow('Gym Name', 'RV FITNESS'),
-                        _buildInfoRow('Address',
-                            'Street Number 12, W Marredpally... Rd 500029,'),
+                        _buildInfoRow(
+                          'Address',
+                          'Street Number 12, W Marredpally... Rd 500029,',
+                        ),
                         _buildInfoRow('Opening Hours', '6:00 AM - 10:00 PM'),
                       ]),
+                      const SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       const SizedBox(height: 16),
                       _buildPlansSection(context),
                       const SizedBox(height: 16),
@@ -70,10 +77,7 @@ class OwnerProfileScreen extends ConsumerWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFFB81C),
-            Color(0xFFF29100),
-          ],
+          colors: [Color(0xFFFFB81C), Color(0xFFF29100)],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
@@ -151,10 +155,7 @@ class OwnerProfileScreen extends ConsumerWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFB81C),
-                  Color(0xFFF29100),
-                ],
+                colors: [Color(0xFFFFB81C), Color(0xFFF29100)],
               ),
               shape: BoxShape.circle,
             ),
@@ -279,6 +280,174 @@ class OwnerProfileScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildAttendanceDashboardCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFB81C).withOpacity(0.2), // Gold tint
+            Color(0xFFF29100).withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Color(0xFFFFB81C).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AttendanceDashboardScreen(),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Attendance Dashboard',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFB81C), // Gold text
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Color(
+                      0xFFFFB81C,
+                    ).withOpacity(0.2), // Gold background
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.dashboard_customize_rounded,
+                    color: Color(0xFFFFB81C),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'View daily attendance & stats', // Short description
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white.withOpacity(0.7),
+                  size: 16,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExpiringMembersCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFD32F2F).withOpacity(0.2), // Red tint
+            Color(0xFFC62828).withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Color(0xFFD32F2F).withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ExpiringMembersScreen()),
+          );
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Expiring Memberships',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFD32F2F), // Red text
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFD32F2F).withOpacity(0.2), // Red background
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.warning_amber_rounded,
+                    color: Color(0xFFD32F2F),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'View members expiring soon', // Short description
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white.withOpacity(0.7),
+                  size: 16,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlansSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -393,18 +562,12 @@ class OwnerProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildSettingTile(
-            'Change Password',
-            Icons.lock_outline,
-            () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChangePasswordScreen(),
-                ),
-              );
-            },
-          ),
+          _buildSettingTile('Change Password', Icons.lock_outline, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+            );
+          }),
           _buildSettingTile(
             'Logout',
             Icons.logout,
@@ -430,10 +593,7 @@ class OwnerProfileScreen extends ConsumerWidget {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(
-          icon,
-          color: isDestructive ? Colors.red : Colors.white,
-        ),
+        leading: Icon(icon, color: isDestructive ? Colors.red : Colors.white),
         title: Text(
           title,
           style: GoogleFonts.poppins(
@@ -453,57 +613,60 @@ class OwnerProfileScreen extends ConsumerWidget {
   Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Color(0xFF2C3E50),
-        title: Text(
-          'Logout',
-          style: GoogleFonts.montserrat(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: GoogleFonts.poppins(
-            color: Colors.white.withOpacity(0.8),
-            fontSize: 16,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(
-                color: Colors.white.withOpacity(0.6),
-                fontWeight: FontWeight.w500,
-              ),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
             ),
-          ),
-          TextButton(
-            onPressed: () async {
-              // Clear session
-              await ref.read(sessionProvider.notifier).logout();
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                  (route) => false,
-                );
-              }
-            },
-            child: Text(
+            backgroundColor: Color(0xFF2C3E50),
+            title: Text(
               'Logout',
-              style: GoogleFonts.poppins(
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
+              style: GoogleFonts.montserrat(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            content: Text(
+              'Are you sure you want to logout?',
+              style: GoogleFonts.poppins(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 16,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.6),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Clear session
+                  await ref.read(sessionProvider.notifier).logout();
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                },
+                child: Text(
+                  'Logout',
+                  style: GoogleFonts.poppins(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
